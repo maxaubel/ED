@@ -1,0 +1,23 @@
+Descripción tarea:
+
+
+
+
+-----------------
+.				-
+.	Int....		-
+.				-
+-----------------
+.				-
+. Instrucciones	-
+.				-
+-----------------
+.				-
+.	Salida		-
+.				-
+-----------------
+
+
+si se quiere mostrar el caracter de un nro negativo, se debe transformar a positivo, e.g. "-2" --> "2"
+
+arreglo de caracteres: {}
