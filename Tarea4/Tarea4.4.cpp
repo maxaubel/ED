@@ -8,19 +8,19 @@
 
 using namespace std;
 
-struct nodo{
-	int tipo;
-	string dato;
-	nodo *hermano;
-	nodo *hijo;
-	nodo *padre;
+struct nodo{     //La estructura cuencta con 5 campos, dato es el nombre de la carpeta/archivo, tipo es para saber si la entidad es archivo o carpeta
+	int tipo;	
+	string dato;	
+	nodo *hermano;//Los nodos hermanos representan un lista enlazada.
+	nodo *hijo;	//cada nodo se enlazará a su hijo primogenito, se tendra que recorrer la lista hermanos para obtener la información de todos los hijos hermanos.
+	nodo *padre; //cada nodo estará enlazado a su padre, o en otras palabras, a la carpeta anterior
 };
 
-void insertarnodo(nodo *aux2, nodo *insertar)
-{	if (aux2 -> hermano == NULL)
+void insertarnodo(nodo *aux2, nodo *insertar)//función que inserta los hijos de una carpeta.
+{	if (aux2 -> hermano == NULL)//si el padre no tiene hijos, lo inserta directamente
 	{	aux2 -> hermano = insertar;
 	}
-	else if(aux2 -> hermano != NULL)
+	else if(aux2 -> hermano != NULL)//si el padre tiene hijos, recorro la lista que generan sus hijos y se inserta el nuevo hijo al final de la lista hermanos.
 	{	for(; aux2 -> hermano != NULL; aux2 = aux2 -> hermano){}
 		aux2 -> hermano = insertar;
 	}
@@ -29,8 +29,8 @@ void insertarnodo(nodo *aux2, nodo *insertar)
 
 
 void lectura(nodo *&arbol,string arch){
-	cout << "Cargando Directorio..." << endl;
-	nodo *aux = new nodo();
+	cout << "Cargando Directorio..." << endl; //desde ésta linea hasta la linea antes del while, se genera los nodos iniciales del árbol, nodo home y nodo usuario.
+	nodo *aux = new nodo(); //Nodo aux será el padre de cada carpeta/archivo
 	ifstream archivo;
 	archivo.open(arch, ios::in);
 	string texto;
@@ -49,28 +49,29 @@ void lectura(nodo *&arbol,string arch){
 	arbol->hijo=usuario;
 	aux = arbol->hijo;
 	while(!archivo.eof())
+	
 	{	getline(archivo,texto);
-		nodo *aux2;
-		if(texto == "<carpeta>")
+		nodo *aux2;//aux2 será el encargado de recorre la lista de hermanos e insertar el hijo al final de ésta.
+		if(texto == "<carpeta>")//cada vez que aparece 'carpeta', se inserta el nodo generado en los hijos del nodo aux y luego aux pasa a ser el nuevo nodo generado
 		{	getline(archivo, texto);
 			getline(archivo, texto);
 			nodo *insertar = new nodo();
-			insertar->dato=texto;
-			insertar->padre=aux;
+			insertar->dato=texto; //se genera el nuevo nodo con los datos correspondientes.
+			insertar->padre=aux;// cada nodo tiene como padre a aux.
 			insertar->hermano=NULL;
 			insertar->hijo=NULL;
 			insertar->tipo=0;
-			if(aux->hijo==NULL)
+			if(aux->hijo==NULL)//si el nodo a insertar es primogenito simplemente se inserta como hijo de aux
 			{	aux->hijo=insertar;
-				aux=insertar;
+				aux=insertar;//aux se transforma en el nodo insertado, ya que cada 'carpeta' es un potencial padre.
 			}
-			if(aux->hijo!=NULL)
-			{	aux2=aux->hijo;
-				insertarnodo(aux2,insertar);
-				aux=insertar;
+			if(aux->hijo!=NULL)//si el nodo a insertar no es primogenito, se debe recorrer la lista hermanos y luego insertar.
+			{	aux2=aux->hijo;//aux2 será el primogenito del padre, el auxiliar se usa para no perder la informacion de aux que es el padre de todos.
+				insertarnodo(aux2,insertar);//funcion que recorre la lista de hermanos e inserta al final de ésta.
+				aux=insertar;//aux se transforma en el nodo insertado, ya que cada 'carpeta' es un potencial padre.
 			}
 		}
-		if(texto=="<archivo>")
+		if(texto=="<archivo>")//los archivos no pueden tener hijos así que aux no se transforma.
 		{	getline(archivo, texto);
 			getline(archivo, texto);
 			nodo *insertar = new nodo();
@@ -79,15 +80,15 @@ void lectura(nodo *&arbol,string arch){
 			insertar->hermano=NULL;
 			insertar->hijo=NULL;
 			insertar->tipo=1;
-			if(aux->hijo!=NULL)
+			if(aux->hijo!=NULL)//si el nodo a insertar es primogenito simplemente se inserta como hijo de aux
 			{	aux2=aux->hijo;
 				insertarnodo(aux2,insertar);
 			}
-			if(aux->hijo==NULL)
+			if(aux->hijo==NULL)//si el nodo a insertar no es primogenito, se debe recorrer la lista hermanos y luego insertar.
 			{	aux->hijo=insertar;
 			}
 		}
-		if(texto=="</carpeta>")
+		if(texto=="</carpeta>")//cuando un padre tiene todos sus hijos listos, auxiliar tiene que volver al padre anterior
 		{	aux=aux->padre;
 		}
 	}
@@ -217,7 +218,6 @@ bool ingresarComando(nodo *&arbol, nodo *&cursor, bool *cortar, nodo *&portapape
 			}
 			else 			//si el origen de lo pegado fue copiado
 			{	insertarnodo(cursor->padre, portapapeles);
-
 			}
 			*/
 			return true;
@@ -271,9 +271,3 @@ int main()
 	return 0;
   
 }
-
-
-
-
-
-
